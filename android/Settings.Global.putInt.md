@@ -1,7 +1,21 @@
 Settings.Global.putInt流程
 =========================
 
-流程說明
+## 情景描摹
+
+### 描摹1
+
+从SDK提供的API`Settings.Global.putInt()`调用开始，首先将传入的键值转换成`NameValueCache`对象，通过`NameValueCache`对象内置的`putStringForUser`方法，调用到`frameworks/base/packages/SettingsProvider/`(uri: content://settings/global)，最终将值写到`/data/system/users/0/settings_global.xml`文件中。
+
+### 描摹2
+
+* api `Settings.Global.putInt()`
+* api传入的键值由`frameworks/base/packages/SettingsProvider/`负责保存，该`provider`运行在`system_server`进程中
+* 键值存放在`/data/system/users/0/settings_global.xml`文件中
+
+
+
+调用流程
 ----------------------------------------------------------------------------------------------------
 
 ### Settings.Global.putInt()开始
@@ -365,7 +379,7 @@ com.android.providers.settings.SettingsProvider.SettingsRegistry.insertSettingLo
 此处将settings中所有的值转成xml格式数据，写入`/data/system/users/0/settings_global.xml`文件
 
 
-`@xxx`脚注说明
+润形着色
 ----------------------------------------------------------------------------------------------------
 ### @getProvider mProviderHolder.getProvider()获取IContentProvider
 ```
@@ -380,10 +394,11 @@ com.android.providers.settings.SettingsProvider.SettingsRegistry.insertSettingLo
             }
         }
 ```
-此处mUri的值为："content://settings/global"，此处不细究mUri在哪里赋值的了，本文主要说明`Settings.Global.putInt`最终的数据去向。忽略所有旁枝末节。
+此处mUri的值为："`content://settings/global`"，此处不细究mUri在哪里赋值的了，本文主要说明`Settings.Global.putInt`最终的数据去向。忽略所有旁枝末节。
 
 全文搜索`android:authorities="settings"`关键字，不难知道其Provider是`frameworks/base/packages/SettingsProvider/src/com/android/providers/settings/SettingsProvider.java`
 打开该文件发现有如下"表"的定义:
+
 ```
     private static final String TABLE_SYSTEM = "system";
     private static final String TABLE_SECURE = "secure";
@@ -420,7 +435,7 @@ com.android.providers.settings.SettingsProvider.SettingsRegistry.insertSettingLo
 上面调用栈为`mStatePersistFile`变量的初始化过程
 
 
-小结
+浮篇小意
 ----------------------------------------------------------------------------------------------------
 
 `Settings.Global.putInt(ContentResolver cr, String name, int value)`方法将键值对保存到`/data/system/users/0/settings_global.xml`文件中。
